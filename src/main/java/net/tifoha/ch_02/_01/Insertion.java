@@ -1,4 +1,4 @@
-package net.tifoha.ch_02_01;
+package net.tifoha.ch_02._01;
 
 /******************************************************************************
  *  Compilation:  javac Insertion.java
@@ -23,7 +23,6 @@ package net.tifoha.ch_02_01;
  *
  ******************************************************************************/
 
-import net.tifoha.utils.StdIn;
 import net.tifoha.utils.StdOut;
 
 import java.util.Comparator;
@@ -63,14 +62,8 @@ public class Insertion {
     public static void sort(Comparable[] a) {
         int n = a.length;
         for (int i = 0; i < n; i++) {
-            Comparable v = a[i];
-            int j = i;
-            while (j > 0 && less(v, a[j - 1])) {
-                j--;
-            }
-            if (j < i) {
-                System.arraycopy(a, j, a, j + 1, i - j);
-                a[j] = v;
+            for (int j = i; j > 0 && less(a[j], a[j - 1]); j--) {
+                exch(a, j, j - 1);
             }
             assert isSorted(a, 0, i);
         }

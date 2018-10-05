@@ -1,36 +1,37 @@
-package net.tifoha.ch_02_01;
+package net.tifoha.ch_02._01;
 
 /******************************************************************************
- *  Compilation:  javac Selection.java
- *  Execution:    java  Selection < input.txt
+ *  Compilation:  javac InsertionX.java
+ *  Execution:    java InsertionX < input.txt
  *  Dependencies: StdOut.java StdIn.java
  *  Data files:   https://algs4.cs.princeton.edu/21elementary/tiny.txt
  *                https://algs4.cs.princeton.edu/21elementary/words3.txt
  *
- *  Sorts a sequence of strings from standard input using selection sort.
+ *  Sorts a sequence of strings from standard input using an optimized
+ *  version of insertion sort that uses half exchanges instead of
+ *  full exchanges to reduce data movement..
  *
  *  % more tiny.txt
  *  S O R T E X A M P L E
  *
- *  % java Selection < tiny.txt
+ *  % java InsertionX < tiny.txt
  *  A E E L M O P R S T X                 [ one string per line ]
  *
  *  % more words3.txt
  *  bed bug dad yes zoo ... all bad yet
  *
- *  % java Selection < words3.txt
- *  all bad bed bug dad ... yes yet zoo    [ one string per line ]
+ *  % java InsertionX < words3.txt
+ *  all bad bed bug dad ... yes yet zoo   [ one string per line ]
  *
  ******************************************************************************/
 
 import net.tifoha.utils.StdIn;
 import net.tifoha.utils.StdOut;
 
-import java.util.Comparator;
-
 /**
- *  The {@code Selection} class provides static methods for sorting an
- *  array using selection sort.
+ *  The {@code InsertionX} class provides static methods for sorting
+ *  an array using an optimized version of insertion sort (with half exchanges
+ *  and a sentinel).
  *  <p>
  *  For additional documentation, see <a href="https://algs4.cs.princeton.edu/21elementary">Section 2.1</a> of
  *  <i>Algorithms, 4th Edition</i> by Robert Sedgewick and Kevin Wayne.
@@ -38,10 +39,11 @@ import java.util.Comparator;
  *  @author Robert Sedgewick
  *  @author Kevin Wayne
  */
-public class Selection {
+
+public class InsertionX {
 
     // This class should not be instantiated.
-    private Selection() { }
+    private InsertionX() { }
 
     /**
      * Rearranges the array in ascending order, using the natural order.
@@ -49,33 +51,30 @@ public class Selection {
      */
     public static void sort(Comparable[] a) {
         int n = a.length;
-        for (int i = 0; i < n; i++) {
-            int min = i;
-            for (int j = i+1; j < n; j++) {
-                if (less(a[j], a[min])) min = j;
-            }
-            exch(a, i, min);
-            assert isSorted(a, 0, i);
-        }
-        assert isSorted(a);
-    }
 
-    /**
-     * Rearranges the array in ascending order, using a comparator.
-     * @param a the array
-     * @param comparator the comparator specifying the order
-     */
-    public static void sort(Object[] a, Comparator comparator) {
-        int n = a.length;
-        for (int i = 0; i < n; i++) {
-            int min = i;
-            for (int j = i+1; j < n; j++) {
-                if (less(comparator, a[j], a[min])) min = j;
+        // put smallest element in position to serve as sentinel
+        int exchanges = 0;
+        for (int i = n-1; i > 0; i--) {
+            if (less(a[i], a[i-1])) {
+                exch(a, i, i-1);
+                exchanges++;
             }
-            exch(a, i, min);
-            assert isSorted(a, comparator, 0, i);
         }
-        assert isSorted(a, comparator);
+        if (exchanges == 0) return;
+
+
+        // insertion sort with half-exchanges
+        for (int i = 2; i < n; i++) {
+            Comparable v = a[i];
+            int j = i;
+            while (less(v, a[j-1])) {
+                a[j] = a[j-1];
+                j--;
+            }
+            a[j] = v;
+        }
+
+        assert isSorted(a);
     }
 
 
@@ -88,12 +87,6 @@ public class Selection {
         return v.compareTo(w) < 0;
     }
 
-    // is v < w ?
-    private static boolean less(Comparator comparator, Object v, Object w) {
-        return comparator.compare(v, w) < 0;
-    }
-
-
     // exchange a[i] and a[j]
     private static void exch(Object[] a, int i, int j) {
         Object swap = a[i];
@@ -105,32 +98,11 @@ public class Selection {
     /***************************************************************************
      *  Check if array is sorted - useful for debugging.
      ***************************************************************************/
-
-    // is the array a[] sorted?
     private static boolean isSorted(Comparable[] a) {
-        return isSorted(a, 0, a.length - 1);
-    }
-
-    // is the array sorted from a[lo] to a[hi]
-    private static boolean isSorted(Comparable[] a, int lo, int hi) {
-        for (int i = lo + 1; i <= hi; i++)
+        for (int i = 1; i < a.length; i++)
             if (less(a[i], a[i-1])) return false;
         return true;
     }
-
-    // is the array a[] sorted?
-    private static boolean isSorted(Object[] a, Comparator comparator) {
-        return isSorted(a, comparator, 0, a.length - 1);
-    }
-
-    // is the array sorted from a[lo] to a[hi]
-    private static boolean isSorted(Object[] a, Comparator comparator, int lo, int hi) {
-        for (int i = lo + 1; i <= hi; i++)
-            if (less(comparator, a[i], a[i-1])) return false;
-        return true;
-    }
-
-
 
     // print array to standard output
     private static void show(Comparable[] a) {
@@ -140,14 +112,15 @@ public class Selection {
     }
 
     /**
-     * Reads in a sequence of strings from standard input; selection sorts them;
+     * Reads in a sequence of strings from standard input; insertion sorts them;
      * and prints them to standard output in ascending order.
      *
      * @param args the command-line arguments
      */
     public static void main(String[] args) {
         String[] a = StdIn.readAllStrings();
-        Selection.sort(a);
+        InsertionX.sort(a);
         show(a);
     }
+
 }

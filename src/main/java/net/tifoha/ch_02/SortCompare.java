@@ -1,4 +1,4 @@
-package net.tifoha.ch_02_01;
+package net.tifoha.ch_02;
 
 /**
  * @author Vitalii Sereda
@@ -24,32 +24,60 @@ package net.tifoha.ch_02_01;
  *
  ******************************************************************************/
 
+import net.tifoha.utils.ReflectionUtils;
 import net.tifoha.utils.StdOut;
 import net.tifoha.utils.StdRandom;
 import net.tifoha.utils.Stopwatch;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toMap;
+
 public class SortCompare {
+    private static final Map<String, Class<?>> classes;
+
+    static {
+        classes = ReflectionUtils
+                .getClasses("net.tifoha.ch_02")
+                .stream()
+                .collect(toMap(Class::getSimpleName, Function.identity()));
+    }
+
+
 
     public static <T extends Comparable> double time(String alg, T[] a) {
         Stopwatch sw = new Stopwatch();
-        if (alg.equals("Insertion")) Insertion.sort(a);
+        if (alg.equals("System")) {
+            Arrays.sort(a);
+        } else {
+            try {
+                String className = SortCompare.class.getPackage().getName() + "." + alg;
+                Class<?> sorterClass = classes.get(alg);
+                Method sortMethod = sorterClass.getMethod("sort", Comparable[].class);
+                sortMethod.invoke(null, new Object[]{a});
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Invalid algorithm: " + alg, e);
+            }
+        }
+//        if (alg.equals("Insertion")) Insertion.sort(a);
 //        else if (alg.equals("InsertionX")) InsertionX.sort(a);
-//        else if (alg.equals("BinaryInsertion")) BinaryInsertion.sort(a);
-        else if (alg.equals("Selection")) Selection.sort(a);
-//        else if (alg.equals("Bubble")) Bubble.sort(a);
-        else if (alg.equals("Shell")) Shell.sort(a);
-//        else if (alg.equals("Merge")) Merge.sort(a);
-//        else if (alg.equals("MergeX")) MergeX.sort(a);
-//        else if (alg.equals("MergeBU")) MergeBU.sort(a);
-//        else if (alg.equals("Quick")) Quick.sort(a);
-//        else if (alg.equals("Quick3way")) Quick3way.sort(a);
-//        else if (alg.equals("QuickX")) QuickX.sort(a);
-//        else if (alg.equals("Heap")) Heap.sort(a);
-        else if (alg.equals("System")) Arrays.sort(a);
-        else throw new IllegalArgumentException("Invalid algorithm: " + alg);
+////        else if (alg.equals("BinaryInsertion")) BinaryInsertion.sort(a);
+//        else if (alg.equals("Selection")) Selection.sort(a);
+////        else if (alg.equals("Bubble")) Bubble.sort(a);
+//        else if (alg.equals("Shell")) Shell.sort(a);
+////        else if (alg.equals("Merge")) Merge.sort(a);
+////        else if (alg.equals("MergeX")) MergeX.sort(a);
+////        else if (alg.equals("MergeBU")) MergeBU.sort(a);
+////        else if (alg.equals("Quick")) Quick.sort(a);
+////        else if (alg.equals("Quick3way")) Quick3way.sort(a);
+////        else if (alg.equals("QuickX")) QuickX.sort(a);
+////        else if (alg.equals("Heap")) Heap.sort(a);
+//        else if (alg.equals("System")) Arrays.sort(a);
+//        else throw new IllegalArgumentException("Invalid algorithm: " + alg);
         return sw.elapsedTime();
     }
 
@@ -85,9 +113,13 @@ public class SortCompare {
 //        int n = Integer.parseInt(args[2]);
 //        int trials = Integer.parseInt(args[3]);
         Stream<String> sorts = Stream.of(
-                "Selection",
-                "Insertion",
+//                "Selection",
+//                "Insertion",
+//                "InsertionArrayCopy",
+//                "InsertionX",
                 "Shell",
+                "MergeTopDown",
+                "MergeBottomUp",
                 "System");
         int n = 10_000;
         int trials = 100;

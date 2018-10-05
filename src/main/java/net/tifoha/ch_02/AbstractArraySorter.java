@@ -1,4 +1,4 @@
-package net.tifoha.ch_02_01;
+package net.tifoha.ch_02;
 
 import java.util.Arrays;
 

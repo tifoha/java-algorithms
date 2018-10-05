@@ -1,4 +1,4 @@
-package net.tifoha.ch_02_01;
+package net.tifoha.ch_02._01;
 
 /******************************************************************************
  *  Compilation:  javac ShellBars.java
@@ -18,7 +18,7 @@ package net.tifoha.ch_02_01;
 import net.tifoha.utils.StdDraw;
 import net.tifoha.utils.StdRandom;
 
-import java.awt.Font;
+import java.awt.*;
 
 public class ShellBars {
     private static final int FF = 4;

@@ -1,4 +1,6 @@
-package net.tifoha.ch_02_01;
+package net.tifoha.ch_02._01;
+
+import net.tifoha.ch_02.AbstractArraySorter;
 
 import java.util.Arrays;
 

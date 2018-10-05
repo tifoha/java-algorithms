@@ -1,5 +1,6 @@
-package net.tifoha.ch_02_01;
+package net.tifoha.ch_02;
 
+import net.tifoha.ch_02._01.SelectionArraySorter;
 import org.junit.Assert;
 import org.junit.Test;
 

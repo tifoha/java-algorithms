@@ -1,43 +1,47 @@
-package net.tifoha.ch_02_01;
+package net.tifoha.ch_02._01;
 
 import net.tifoha.utils.StdDraw;
 import net.tifoha.utils.StdRandom;
 
 /******************************************************************************
- *  Compilation:  javac SelectionBars.java
- *  Execution:    java SelectionBars n
+ *  Compilation:  javac InsertionBars.java
+ *  Execution:    java InsertionBars N
  *  Dependencies: StdDraw.java
  *
- *  Selection sort n random real numbers between 0 and 1, visualizing
+ *  Insertion sort n random real numbers between 0 and 1, visualizing
  *  the results by ploting bars with heights proportional to the values.
  *
- *  % java SelectionBars 20
+ *  % java InsertionBars 20
  *
  ******************************************************************************/
 
-public class SelectionBars {
 
+public class InsertionBars {
     public static void sort(double[] a) {
         int n = a.length;
         for (int i = 0; i < n; i++) {
-            int min = i;
-            for (int j = i + 1; j < n; j++)
-                if (less(a[j], a[min])) min = j;
-            show(a, i, min);
-            exch(a, i, min);
+            int j = i;
+            while (j >= 1 && less(a[j], a[j - 1])) {
+                exch(a, j, j - 1);
+                j--;
+            }
+            show(a, i, j);
         }
     }
 
-    private static void show(double[] a, int i, int min) {
+    private static void show(double[] a, int i, int j) {
         StdDraw.setYscale(-a.length + i + 1, i);
         StdDraw.setPenColor(StdDraw.LIGHT_GRAY);
-        for (int k = 0; k < i; k++)
-            StdDraw.line(k, 0, k, a[k] * 0.6);
-        StdDraw.setPenColor(StdDraw.BLACK);
-        for (int k = i; k < a.length; k++)
+        for (int k = 0; k < j; k++)
             StdDraw.line(k, 0, k, a[k] * 0.6);
         StdDraw.setPenColor(StdDraw.BOOK_RED);
-        StdDraw.line(min, 0, min, a[min] * 0.6);
+        StdDraw.line(j, 0, j, a[j] * 0.6);
+        StdDraw.setPenColor(StdDraw.BLACK);
+        for (int k = j + 1; k <= i; k++)
+            StdDraw.line(k, 0, k, a[k] * 0.6);
+        StdDraw.setPenColor(StdDraw.LIGHT_GRAY);
+        for (int k = i + 1; k < a.length; k++)
+            StdDraw.line(k, 0, k, a[k] * 0.6);
     }
 
     private static boolean less(double v, double w) {
@@ -52,7 +56,7 @@ public class SelectionBars {
 
     public static void main(String[] args) {
 //        int n = Integer.parseInt(args[0]);
-        int n = 20;
+        int n = 10;
         StdDraw.setCanvasSize(160, 640);
         StdDraw.setXscale(-1, n + 1);
         StdDraw.setPenRadius(0.006);
@@ -63,3 +67,4 @@ public class SelectionBars {
     }
 
 }
+
