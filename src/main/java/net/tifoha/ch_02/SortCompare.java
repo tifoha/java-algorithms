@@ -120,12 +120,13 @@ public class SortCompare {
                 "Shell",
                 "MergeTopDown",
                 "MergeBottomUp",
+                "Quick",
                 "System");
         int n = 10_000;
         int trials = 100;
 //        boolean sorted = true;
         boolean sorted = false;
-        if (args.length == 5 && sorted) {
+        if (sorted) {
             sorts
                     .forEach(alg -> {
                         double time = timeSortedInput(alg, n, trials);

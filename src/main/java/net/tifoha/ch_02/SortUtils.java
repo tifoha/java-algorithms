@@ -109,14 +109,12 @@ public class SortUtils {
         return true;
     }
 
-
     // print array to standard output
     public static void show(Comparable[] a) {
         for (int i = 0; i < a.length; i++) {
             StdOut.println(a[i]);
         }
     }
-
 
     public static Duration timeRandomInput(Consumer<Double[]> consumer, int n, int trials) {
         double total = 0.0;
@@ -133,6 +131,48 @@ public class SortUtils {
             stopwatch.stop();
         }
         return stopwatch.getDuration();
+    }
+
+    public static <T extends Comparable<T>> int partition(T[] a, int lo, int hi) {
+        Comparable v = a[lo];
+        int i = lo;
+        int j = hi + 1;
+        while (i < j) {
+            while (i < hi) if (less(v, a[++i])) break;
+            while (j > lo) if (less(a[--j], v)) break;
+            if (i >= j) {
+                break;
+            }
+            exch(a, i, j);
+        }
+        exch(a, lo, j);
+        return j;
+    }
+
+    public static <T extends Comparable<T>> IntPair partition3(T[] a, int lo, int hi) {
+        Comparable v = a[lo];
+        int lt = lo;
+        int i = lo + 1;
+        int gt = hi;
+        while (i <= gt) {
+            int cmp = compare(v, a[i]);
+            if (cmp > 0) {
+                exch(a, lt++, i++);
+            } else if (cmp < 0) {
+                exch(a, i, gt--);
+            } else {
+                i++;
+            }
+        }
+        return pair(lt, gt + 1);
+    }
+
+    private static <T extends Comparable<T>> int compare(T a, T b) {
+        return a.compareTo(b);
+    }
+
+    public static IntPair pair(int firs, int second) {
+        return new IntPair(firs, second);
     }
 
     public static void main(String[] args) {
@@ -153,6 +193,24 @@ public class SortUtils {
 //                    n,
 //                    timeRandomInput(a -> merge(a, new Double[a.length], lo, mid, hi), n, trails),
 //                    timeRandomInput(a -> merge(a, lo, mid, hi), n, trails));
+        }
+    }
+
+    public static class IntPair {
+        private int first;
+        private int second;
+
+        private IntPair(int first, int second) {
+            this.first = first;
+            this.second = second;
+        }
+
+        public int getFirst() {
+            return first;
+        }
+
+        public int getSecond() {
+            return second;
         }
     }
 }

@@ -1,9 +1,8 @@
 package net.tifoha.ch_02._03;
 
-import java.util.Arrays;
+import net.tifoha.ch_02.SortUtils;
 
-import static net.tifoha.ch_02.SortUtils.exch;
-import static net.tifoha.ch_02.SortUtils.less;
+import java.util.Arrays;
 
 public class Quick {
     /**
@@ -11,35 +10,19 @@ public class Quick {
      *
      * @param a the array to be sorted
      */
-    public static <T extends Comparable> void sort(Comparable<T>[] a) {
+    public static <T extends Comparable<T>> void sort(T[] a) {
         int lo = 0;
         int hi = a.length - 1;
         sort(a, lo, hi);
     }
 
-    private static <T extends Comparable> void sort(Comparable<T>[] a, int lo, int hi) {
+    private static <T extends Comparable<T>> void sort(T[] a, int lo, int hi) {
         if (lo == hi) {
             return;
         }
-        int mid = partition(a, lo, hi);
+        int mid = SortUtils.partition(a, lo, hi);
         sort(a, lo, mid);
         sort(a, mid + 1, hi);
-    }
-
-    private static int partition(Comparable[] a, int lo, int hi) {
-        Comparable v = a[lo];
-        int i = lo;
-        int j = hi + 1;
-        while (i < j) {
-            while (i < hi) if (less(v, a[++i])) break;
-            while (j > lo) if (less(a[--j], v)) break;
-            if (i >= j) {
-                break;
-            }
-            exch(a, i, j);
-        }
-        exch(a, lo, j);
-        return j;
     }
 
     public static void main(String[] args) {
