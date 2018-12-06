@@ -5,16 +5,44 @@ import net.tifoha.utils.StdOut;
 import net.tifoha.utils.StdRandom;
 
 import java.time.Duration;
+import java.util.Comparator;
 import java.util.function.Consumer;
 
+import static java.lang.Math.max;
+import static java.util.Comparator.naturalOrder;
+
 public class SortUtils {
+    private static final int INSERTION_SORT_CUTOFF = 8;
+    private static final int MEDIAN_OF_3_CUTOFF = 32;
+
     /***************************************************************************
      *  Helper sorting functions.
      ***************************************************************************/
 
-    // is a < b ?
+    /**
+     * is a < b ?
+     */
     public static <T extends Comparable<T>> boolean less(T a, T b) {
-        return a.compareTo(b) < 0;
+        return less(a, b, naturalOrder());
+    }
+
+    /**
+     * is a < b ?
+     */
+    public static <T> boolean less(T a, T b, Comparator<T> comparator) {
+        return comparator.compare(a, b) < 0;
+    }
+
+    /**
+     * is a > b ?
+     */
+    public static <T> boolean more(T a, T b, Comparator<T> comparator) {
+        return comparator.compare(a, b) > 0;
+    }
+
+    // is a < b ?
+    public static boolean less(int a, int b) {
+        return a < b;
     }
 
     // exchange a[i] and a[j]
@@ -23,6 +51,16 @@ public class SortUtils {
             return;
         }
         Object swap = a[i];
+        a[i] = a[j];
+        a[j] = swap;
+    }
+
+    // exchange a[i] and a[j]
+    public static void exch(int[] a, int i, int j) {
+        if (i == j) {
+            return;
+        }
+        int swap = a[i];
         a[i] = a[j];
         a[j] = swap;
     }
@@ -49,41 +87,6 @@ public class SortUtils {
         }
     }
 
-//    /**
-//     * Merge without creating new array
-//     */
-//    @SuppressWarnings("unchecked")
-//    public static <T extends Comparable<T>> void merge(T[] a, int lo, int mid, int hi) {
-////        if (isMerged(a, lo, mid, hi)) {
-////            return;
-////        }
-//        int i = lo;
-//        int j = mid < hi ? mid + 1 : hi;
-//        T l = a[i];
-//        T h = a[j];
-//        for (int k = lo; k <= hi; k++) {
-//            if (i > mid) {
-//                a[k] = h;
-//                j++;
-//                if (j <= hi) {
-//                    h = a[j];
-//                }
-//            } else if (j > hi) {
-//                a[k] = l;
-//                l = a[++i];
-//            } else if (less(h, l)) {
-//                a[k] = h;
-//                j++;
-//                if (j <= hi) {
-//                    h = a[j];
-//                }
-//            } else {
-//                a[k] = l;
-//                l = a[++i];
-//            }
-//        }
-//    }
-
     private static <T extends Comparable<T>> boolean isMerged(T[] a, int lo, int mid, int hi) {
         if (lo == hi) {
             return true;
@@ -99,13 +102,13 @@ public class SortUtils {
         return false;
     }
 
-    public static boolean isSorted(Comparable[] a) {
+    public static <T extends Comparable<T>> boolean isSorted(T[] a) {
         return isSorted(a, 0, a.length - 1);
     }
 
-    public static boolean isSorted(Comparable[] a, int lo, int hi) {
+    public static <T extends Comparable<T>> boolean isSorted(T[] a, int lo, int hi) {
         for (int i = lo + 1; i <= hi; i++)
-            if (less(a[i], a[i - 1])) return false;
+            if (less((T) a[i], (T) a[i - 1])) return false;
         return true;
     }
 
@@ -133,7 +136,7 @@ public class SortUtils {
         return stopwatch.getDuration();
     }
 
-    public static <T extends Comparable<T>> int partition(T[] a, int lo, int hi) {
+    public static <T extends Comparable<T>> int partition(Comparable[] a, int lo, int hi) {
         Comparable v = a[lo];
         int i = lo;
         int j = hi + 1;
@@ -150,7 +153,7 @@ public class SortUtils {
     }
 
     public static <T extends Comparable<T>> IntPair partition3(T[] a, int lo, int hi) {
-        Comparable v = a[lo];
+        T v = a[lo];
         int lt = lo;
         int i = lo + 1;
         int gt = hi;
@@ -164,7 +167,69 @@ public class SortUtils {
                 i++;
             }
         }
-        return pair(lt, gt + 1);
+        return pair(lt - 1, gt + 1);
+    }
+
+    public static <T extends Comparable<T>> IntPair partition3mirror(T[] a, int lo, int hi) {
+        int m = getMedianIndex(a, lo, hi);
+        exch(a, m, lo);
+
+        // Bentley-McIlroy 3-way partitioning
+        int i = lo, j = hi + 1;
+        int p = lo, q = hi + 1;
+        T v = a[lo];
+        while (true) {
+            while (less(a[++i], v))
+                if (i == hi) break;
+            while (less(v, a[--j]))
+                if (j == lo) break;
+
+            // pointers cross
+            if (i == j && eq(a[i], v))
+                exch(a, ++p, i);
+            if (i >= j) break;
+
+            exch(a, i, j);
+            if (eq(a[i], v)) exch(a, ++p, i);
+            if (eq(a[j], v)) exch(a, --q, j);
+        }
+
+
+        i = j + 1;
+        for (int k = lo; k <= p; k++)
+            exch(a, k, j--);
+        for (int k = hi; k >= q; k--)
+            exch(a, k, i++);
+
+        return new IntPair(j, i);
+    }
+
+    private static <T extends Comparable<T>> int getMedianIndex(T[] a, int lo, int hi) {
+        int m;
+        int n = hi - lo + 1;
+        if (n <= MEDIAN_OF_3_CUTOFF) {
+            m = median3(a, lo, lo + n / 2, hi);
+        }
+        // use Tukey ninther as partitioning element
+        else {
+            int eps = n / 8;
+            int mid = lo + n / 2;
+            int m1 = median3(a, lo, lo + eps, lo + eps + eps);
+            int m2 = median3(a, mid - eps, mid, mid + eps);
+            int m3 = median3(a, hi - eps - eps, hi - eps, hi);
+            m = median3(a, m1, m2, m3);
+        }
+        return m;
+    }
+
+    private static <T extends Comparable<T>> int median3(T[] a, int lo, int m, int hi) {
+        return (less(a[lo], a[m]) ?
+                (less(a[m], a[hi]) ? m : less(a[lo], a[hi]) ? hi : lo) :
+                (less(a[hi], a[m]) ? m : less(a[hi], a[lo]) ? hi : lo));
+    }
+
+    private static <T extends Comparable<T>> boolean eq(T a, T b) {
+        return compare(a, b) == 0;
     }
 
     private static <T extends Comparable<T>> int compare(T a, T b) {
@@ -194,6 +259,69 @@ public class SortUtils {
 //                    timeRandomInput(a -> merge(a, new Double[a.length], lo, mid, hi), n, trails),
 //                    timeRandomInput(a -> merge(a, lo, mid, hi), n, trails));
         }
+    }
+
+    public static void swim(int[] heap, int index) {
+        while (index > 1 && less(heap[index / 2], heap[index])) {
+            exch(heap, index / 2, index);
+            index = index / 2;
+        }
+    }
+
+    public static void sink(int[] heap, int index, int heapSize) {
+        while (index * 2 <= heapSize) {
+            int j = index * 2;
+            if (j < heapSize && less(heap[j], heap[j + 1])) j++;
+            if (!less(heap[index], heap[j])) break;
+            exch(heap, index, j);
+            index = j;
+        }
+    }
+
+    public static <T> void swim(T[] heap, int index, Comparator<T> comparator) {
+        while (index > 1 && less(heap[index / 2], heap[index], comparator)) {
+            exch(heap, index / 2, index);
+            index = index / 2;
+        }
+    }
+
+    public static <T> void swim0(T[] heap, int index, Comparator<T> comparator) {
+        int parent = max(index / 2 - 1, 0);
+        while (index >= 1 && less(heap[parent], heap[index], comparator)) {
+            exch(heap, parent, index);
+            index = parent;
+        }
+    }
+
+    public static <T> void sink(T[] heap, int index, int heapSize, Comparator<T> comparator) {
+        while (index * 2 <= heapSize) {
+            int j = index * 2;
+            //check end of heap and choose biggest node
+            if (j < heapSize && less(heap[j], heap[j + 1], comparator)) j++;
+            if (!less(heap[index], heap[j], comparator)) break;
+            exch(heap, index, j);
+            index = j;
+        }
+    }
+
+    public static <T> void sink0(T[] heap, int index, int heapSize, Comparator<T> comparator) {
+        while (index * 2 <= heapSize) {
+            int j = index * 2;
+            //check end of heap and choose biggest node
+            if (j < heapSize && less(heap[j - 1], heap[j], comparator)) j++;
+            if (!less(heap[index - 1], heap[j - 1], comparator)) break;
+            exch(heap, index - 1, j - 1);
+            index = j;
+        }
+    }
+
+    public static void move(Object[] a, int from, int to) {
+        a[to] = a[from];
+        a[from] = null;
+    }
+
+    public static <T> boolean eq(T a, T b, Comparator<T> cmp) {
+        return cmp.compare(a, b) == 0;
     }
 
     public static class IntPair {

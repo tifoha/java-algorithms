@@ -4,7 +4,7 @@ import net.tifoha.ch_02.SortUtils;
 
 import java.util.Arrays;
 
-public class Quick {
+public class Quick3Way {
     /**
      * Rearranges the array in ascending order, using the natural order.
      *
@@ -20,13 +20,14 @@ public class Quick {
         if (lo >= hi) {
             return;
         }
-        int mid = SortUtils.partition(a, lo, hi);
-        sort(a, lo, mid);
-        sort(a, mid + 1, hi);
+        SortUtils.IntPair margin = SortUtils.partition3(a, lo, hi);
+        sort(a, lo, margin.getFirst());
+        sort(a, margin.getSecond(), hi);
     }
 
     public static void main(String[] args) {
-        String[] a = "QUICKSORTEXAMPLE".split("");
+//        String[] a = "QUICKSORTEXAMPLE".split("");
+        String[] a = "89451687431534613168413484534867984133146876".split("");
         sort(a);
         System.out.println(Arrays.toString(a));
     }

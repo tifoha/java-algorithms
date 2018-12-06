@@ -1,0 +1,242 @@
+Что такое сигнатура метода?
+Что такое перегрузка метода?
+Describe this class:
+public class Clazz {
+    public String foo(List<String> strings) {
+        return Objects.toString(strings.size());
+    }
+
+    public int foo(List<Integer> integers) {
+        return integers.size();
+    }
+}
+
+Чем отличается abstract class and interface, в каких случаях лучше использовать?
+Есть ли в Java множественное наследование?
+Что отобразится на экране?
+public class Outer {
+    private String bar = "Outer";
+
+    private class Inner extends Outer{
+        private String bar = "Inner";
+    }
+
+    public static void main(String[] args) {
+        Inner instance = new Inner();
+        System.out.println(instance.bar);
+    }
+}
+
+Что выведется на экран?
+public class Bank {
+    private static int nextId = 0;
+    private final Map<Account, Double> accountBalances = new HashMap<>();
+
+    public Account createAccount(Type type, double balance) {
+        Account account = new Account(nextId++, type);
+        accountBalances.put(account, balance);
+        return account;
+    }
+
+    public static void main(String[] args) {
+        Bank bank = new Bank();
+        Account account1 = bank.createAccount(Type.REGULAR, 100);
+        Account account2 = bank.createAccount(Type.REGULAR, 200);
+
+
+        Double cash1 = bank.takeCash(account1, 50);
+        System.out.printf("Cash1: %s%n", cash1);                                 //$45
+        System.out.printf("Account1: %s%n", bank.getBalance(account1));          // $50
+
+        account2.setType(Type.VIP);
+        Double cash2 = bank.takeCash(account2, 100);
+        System.out.printf("Cash2: %s%n", cash2);                                 // $100
+        System.out.printf("Account2: %s%n", bank.getBalance(account2));          // $100
+
+    }
+
+    private Double takeCash(Account account, double amount) {
+        Double balance = accountBalances.get(account);
+        if (balance != null && balance >= amount) {
+            double newBalance = balance - amount;
+            accountBalances.put(account, newBalance);
+            return account.getType().chargeFee(amount);
+        }
+        return null;
+    }
+
+    private Double getBalance(Account account) {
+        return accountBalances.get(account);
+    }
+}
+
+class Account {
+    private final int id;
+    private Type type;
+
+    public Account(int id, Type type) {
+        this.id = id;
+        this.type = type;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Account account = (Account) o;
+        return id == account.id &&
+                Objects.equals(type, account.type);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, type);
+    }
+}
+
+enum Type {
+    REGULAR(0.1), VIP(0);
+
+    private final double fee;
+
+    Type(double fee) {
+        this.fee = fee;
+    }
+
+    public double chargeFee(double amount) {
+        return amount - amount * fee;
+    }
+}
+
+-Что такое Иммутабл объект?
+Что такое volatile и transient? Для чего и в каких случаях можно было бы использовать default?
+Напишите Singleton… А с ленивой загрузкой. А если он должен быть потоко-безопасным? А в каких случаях ленивая загрузка хуже?
+-Какова иерархия исключений.
+SQLException и поинтересоваться, оно chekced или unchecked и нормально ли это по мнению кандидата.
+Предположим, есть блок try-finally. В блоке try возникло исключение и выполнение переместилось в блок finally. В блоке finally тоже возникло исключение. Какое из двух исключений “выпадет” из блока try-finally? Что случится со вторым исключением?
+public static void main(String[] args) {
+        try {
+            throw new IllegalArgumentException();
+        } finally {
+            throw new IndexOutOfBoundsException();
+        }
+    }
+
+ИСКЛЮЧЕНИЯ
+Какова иерархия коллекций?
+В каких случаях разумно использовать массив, а не ArrayList?
+Чем отличается ArrayList от Vector?
+Чем отличаются HashMap и TreeMap? Как они устроены и работают? Что со временем доступа к объектам, какие зависимости?
+Какие данные могут хранить SortedSet?
+public class HashRegistry {
+    private final MessageDigest md;
+    private final Map<byte[], byte[]> cache = new HashMap<>();
+
+    public HashRegistry() {
+        try {
+            md = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public byte[] getHash(byte[] bytes) {
+        return cache.computeIfAbsent(bytes, this::md5);
+    }
+
+    private byte[] md5(byte[] bytes) {
+        try {
+            return md.digest(bytes);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void main(String[] args) {
+        HashRegistry hashRegistry = new HashRegistry();
+        String data1 = "some data1";
+        byte[] hash1 = hashRegistry.getHash(data1.getBytes());
+
+        String data2 = "some data1";
+        byte[] hash2 = hashRegistry.getHash(data2.getBytes());
+
+        System.out.println(Arrays.equals(hash1, hash2));
+    }
+}
+Что выведется на экран?
+    public static void main(String[] args) {
+        Collection<Integer> ints = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
+        for (Integer i :ints) {
+            if (i % 2 != 0) {
+                ints.remove(i);
+            }
+        }
+        System.out.println(ints);
+    }
+
+СТРОКИ
+Как заменить символ в строке?
+"stash" -> "slash"
+Чем отличаются и что общего у классов String, StringBuffer и StringBuilder?
+
+JDBC
+print the names of classes that have at least two excellent pupils
+Students:               Classes
+|ID|MARK|CLASS|         |ID|NAME|
+|--|----|-----|         |--|----|
+|1 |A   |1    |         |1 |C_1 |
+|--|----|-----|         |--|----|
+|2 |B   |1    |         |2 |C_2 |
+|--|----|-----|         |--|----|
+|3 |A   |1    |         |3 |C_3 |
+|--|----|-----|         |--|----|
+|4 |C   |1    |
+|--|----|-----|
+|5 |A   |2    |
+|--|----|-----|
+|6 |A   |2    |
+|--|----|-----|
+|7 |A   |2    |
+|--|----|-----|
+|8 |C   |3    |
+|--|----|-----|
+|9 |D   |3    |
+|--|----|-----|
+|10|A   |3    |
+|--|----|-----|
+Как устроены индексы?
+JDBC: Connection, Statement, PreparedStatement, CallableStatement, ResulSet, зачем каждая из этих сущностей нужна. Чем они являются: абстрактными классамм, конкретными классами или интерфейсами и почему.
+Какие паттерны реализованы в JDBC?
+
+ПАТТЕКНЫ
+Какой твой любимый паттерн? ;)
+Нарисуй из каких компонентов состоит паттерн Строитель
+Что такое паттерн Стейт?
+
+ТЕСТИРОВАНИЕ
+Что такое TDD?
+Как обработать исключение в JUnit?
+
+ЗАДАЧИ
+1. Замердж два отсортированых листа в один отсортированых.
+public List<T> merge(List<T> a, List<T>)
+2. Сколько нужно операторов колл центра
+
+
+
+
+
+
+

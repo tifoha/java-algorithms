@@ -44,9 +44,8 @@ public class SortCompare {
         classes = ReflectionUtils
                 .getClasses("net.tifoha.ch_02")
                 .stream()
-                .collect(toMap(Class::getSimpleName, Function.identity()));
+                .collect(toMap(Class::getSimpleName, Function.identity(), (c1, c2) -> c2));
     }
-
 
 
     public static <T extends Comparable> double time(String alg, T[] a) {
@@ -55,7 +54,6 @@ public class SortCompare {
             Arrays.sort(a);
         } else {
             try {
-                String className = SortCompare.class.getPackage().getName() + "." + alg;
                 Class<?> sorterClass = classes.get(alg);
                 Method sortMethod = sorterClass.getMethod("sort", Comparable[].class);
                 sortMethod.invoke(null, new Object[]{a});
@@ -107,6 +105,21 @@ public class SortCompare {
         return total;
     }
 
+    // Use alg to sort trials random arrays of length n.
+    public static double timePartialSortedInput(String alg, int n, int trials, double probability) {
+        int p = (int) (n * probability);
+        double total = 0.0;
+        Double[] a = new Double[n];
+        // Perform one experiment (generate and sort an array).
+        for (int t = 0; t < trials; t++) {
+            for (int i = 0; i < n; i++) {
+                a[i] = 0.0 + StdRandom.uniform(p);
+            }
+            total += time(alg, a);
+        }
+        return total;
+    }
+
     public static void main(String[] args) {
 //        String alg1 = args[0];
 //        String alg2 = args[1];
@@ -117,32 +130,65 @@ public class SortCompare {
 //                "Insertion",
 //                "InsertionArrayCopy",
 //                "InsertionX",
-                "Shell",
+//                "Shell",
                 "MergeTopDown",
                 "MergeBottomUp",
                 "Quick",
+                "Quick3Way",
+                "Quick3WayMirror",
+                "HeapSinkSwim",
+                "Heap",
                 "System");
-        int n = 10_000;
+        int n = 100_000;
         int trials = 100;
-//        boolean sorted = true;
-        boolean sorted = false;
-        if (sorted) {
-            sorts
-                    .forEach(alg -> {
-                        double time = timeSortedInput(alg, n, trials);
-                        StdOut.printf("%s time:%5.3f%n", alg, time);
-                    });
-        } else {
-            sorts
-                    .forEach(alg -> {
-                        double time = timeRandomInput(alg, n, trials);
-                        StdOut.printf("%s time:%5.3f%n", alg, time);
-                    });
+//        ArrayType arrayType = ArrayType.DISTINCT;
+        ArrayType arrayType = ArrayType.PARTIAL_SORTED;
+//        ArrayType arrayType = ArrayType.SORTED;
+        switch (arrayType) {
+            case DISTINCT:
+                sorts
+                        .forEach(alg -> {
+                            double time = timeRandomInput(alg, n, trials);
+                            StdOut.printf("%s time:%5.3f%n", alg, time);
+                        });
+                break;
+            case SORTED:
+                sorts
+                        .forEach(alg -> {
+                            double time = timeSortedInput(alg, n, trials);
+                            StdOut.printf("%s time:%5.3f%n", alg, time);
+                        });
+                break;
+            case PARTIAL_SORTED:
+                sorts
+                        .forEach(alg -> {
+                            double time = timePartialSortedInput(alg, n, trials, 0.3);
+                            StdOut.printf("%s time:%5.3f%n", alg, time);
+                        });
         }
+////        boolean sorted = true;
+//        boolean sorted = false;
+//        if (sorted) {
+//            sorts
+//                    .forEach(alg -> {
+//                        double time = timeSortedInput(alg, n, trials);
+//                        StdOut.printf("%s time:%5.3f%n", alg, time);
+//                    });
+//        } else {
+//            sorts
+//                    .forEach(alg -> {
+//                        double time = timeRandomInput(alg, n, trials);
+//                        StdOut.printf("%s time:%5.3f%n", alg, time);
+//                    });
+//        }
+//
+////        StdOut.printf("For %d random Doubles\n    %s is", n, alg1);
+////        StdOut.printf(" %.1f times faster than %s\n", time2 / time1, alg2);
+////        StdOut.printf("%s time:%5.3f%n", alg1, time1);
+////        StdOut.printf("%s time:%5.3f%n", alg2, time2);
+    }
 
-//        StdOut.printf("For %d random Doubles\n    %s is", n, alg1);
-//        StdOut.printf(" %.1f times faster than %s\n", time2 / time1, alg2);
-//        StdOut.printf("%s time:%5.3f%n", alg1, time1);
-//        StdOut.printf("%s time:%5.3f%n", alg2, time2);
+    public enum ArrayType {
+        DISTINCT, SORTED, PARTIAL_SORTED
     }
 }

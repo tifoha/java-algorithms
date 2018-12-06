@@ -1,4 +1,4 @@
-package net.tifoha.ch_01_05;
+package net.tifoha.ch_01._05;
 
 import java.io.IOException;
 import java.nio.file.Files;

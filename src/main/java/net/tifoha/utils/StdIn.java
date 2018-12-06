@@ -9,11 +9,11 @@ package net.tifoha.utils;
  *
  ******************************************************************************/
 
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.Locale;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -593,6 +593,16 @@ public final class StdIn {
     private static void setScanner(Scanner scanner) {
         StdIn.scanner = scanner;
         StdIn.scanner.useLocale(LOCALE);
+    }
+
+    public static void setFile(String filePath) {
+        try {
+            StdIn.scanner.close();
+            InputStream in = Files.newInputStream(Paths.get(filePath));
+            setScanner(new Scanner(in, CHARSET_NAME));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

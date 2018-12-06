@@ -1,11 +1,8 @@
-package net.tifoha.ch_01_05;
+package net.tifoha.ch_01._05;
 
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
-import static java.lang.Math.max;
-import static java.lang.Math.min;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Vitalii Sereda
