@@ -7,9 +7,9 @@ import java.util.Scanner;
 /**
  * @author Vitalii Sereda
  */
-public class ArrayGraph extends Graph {
-    private Collection<Integer>[] vertices;
-    private int edgeCount;
+public class ArrayGraph implements Graph {
+    protected final Collection<Integer>[] vertices;
+    protected int edgeCount;
 
     @SuppressWarnings("unchecked")
     public ArrayGraph(int v) {
@@ -49,5 +49,17 @@ public class ArrayGraph extends Graph {
     @Override
     public Iterable<Integer> adj(int v) {
         return vertices[v];
+    }
+
+    public String toString() {
+        StringBuilder s = new StringBuilder(v() + " вершин, " + e() + " ребер\n");
+        for (int v = 0; v < v(); v++) {
+            s.append(v).append(": ");
+            for (int w : this.adj(v)) {
+                s.append(w).append(' ');
+            }
+            s.append('\n');
+        }
+        return s.toString();
     }
 }
