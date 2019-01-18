@@ -1,6 +1,6 @@
 package net.tifoha.ch_04._01;
 
-import static net.tifoha.ch_04._01.GraphUtils.getScanner;
+import static net.tifoha.ch_04.GraphUtils.tinyDG;
 
 /**
  * @author Vitalii Sereda
@@ -34,7 +34,7 @@ public class Cycles {
     }
 
     public static void main(String[] args) {
-        ArrayGraph graph1 = new ArrayGraph(getScanner("tinyG.txt"));
+        Graph graph1 = tinyDG();
         Cycles cycles1 = new Cycles(graph1);
         System.out.println(cycles1.hasCycles());
 
@@ -46,6 +46,5 @@ public class Cycles {
         graph2.addEdge(2,4);
         Cycles cycles2 = new Cycles(graph2);
         System.out.println(cycles2.hasCycles());
-
     }
 }

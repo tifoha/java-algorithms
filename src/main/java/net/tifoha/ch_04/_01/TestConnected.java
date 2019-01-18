@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import static net.tifoha.ch_04._01.GraphUtils.getScanner;
+import static net.tifoha.ch_04.GraphUtils.getScanner;
 
 /**
  * @author Vitalii Sereda

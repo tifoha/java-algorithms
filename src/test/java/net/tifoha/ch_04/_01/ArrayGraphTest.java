@@ -1,5 +1,6 @@
 package net.tifoha.ch_04._01;
 
+import net.tifoha.ch_04.GraphUtils;
 import org.junit.Test;
 
 import java.util.Scanner;
