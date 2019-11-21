@@ -1,11 +1,12 @@
 package net.tifoha.ch_02._03;
 
-import net.tifoha.ch_02.SortUtils.IntPair;
 import net.tifoha.ch_02._01.InsertionArrayCopy;
+import net.tifoha.utils.misc.IntPair;
 
 import java.util.Arrays;
 
-import static net.tifoha.ch_02.SortUtils.partition3mirror;
+import static net.tifoha.utils.algorithms.sort.SortUtils.partition3mirror;
+
 
 public class Quick3WayMirror {
     private static final int INSERTION_SORT_CUTOFF = 8;

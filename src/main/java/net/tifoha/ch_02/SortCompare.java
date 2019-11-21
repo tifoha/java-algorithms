@@ -139,7 +139,7 @@ public class SortCompare {
                 "HeapSinkSwim",
                 "Heap",
                 "System");
-        int n = 100_000;
+        int n = 1000_000;
         int trials = 100;
 //        ArrayType arrayType = ArrayType.DISTINCT;
         ArrayType arrayType = ArrayType.PARTIAL_SORTED;

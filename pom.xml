@@ -76,6 +76,22 @@
             <version>4.11</version>
             <scope>test</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.16</version>
+        </dependency>
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>3.8</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.9.8</version>
+        </dependency>
 
     </dependencies>
     <repositories>
@@ -84,4 +100,27 @@
             <url>https://dl.bintray.com/flowtick/jgraphx/</url>
         </repository>
     </repositories>
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>nexus-staging-maven-plugin</artifactId>
+            <version>1.5.1</version>
+            <executions>
+                <execution>
+                    <id>default-deploy</id>
+                    <phase>deploy</phase>
+                    <goals>
+                        <goal>deploy</goal>
+                    </goals>
+                </execution>
+            </executions>
+            <configuration>
+                <serverId>nexus</serverId>
+                <nexusUrl>http://nexus.tifoha.net/repository</nexusUrl>
+                <skipStaging>true</skipStaging>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
 </project>

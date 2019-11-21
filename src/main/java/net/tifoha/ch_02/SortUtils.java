@@ -3,13 +3,17 @@ package net.tifoha.ch_02;
 import net.tifoha.utils.CyclicStopwatch;
 import net.tifoha.utils.StdOut;
 import net.tifoha.utils.StdRandom;
+import net.tifoha.utils.algorithms.sort.comparator.IntComparator;
+import net.tifoha.utils.algorithms.sort.comparator.LongComparator;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.Consumer;
 
 import static java.lang.Math.max;
 import static java.util.Comparator.naturalOrder;
+import static net.tifoha.utils.algorithms.sort.SortUtils.binarySearch;
 
 public class SortUtils {
     private static final int INSERTION_SORT_CUTOFF = 8;
@@ -34,9 +38,37 @@ public class SortUtils {
     }
 
     /**
+     * is a < b ?
+     */
+    public static  boolean less(int a, int b, IntComparator comparator) {
+        return comparator.compare(a, b) < 0;
+    }
+
+    /**
+     * is a < b ?
+     */
+    public static  boolean less(long a, long b, LongComparator comparator) {
+        return comparator.compare(a, b) < 0;
+    }
+
+    /**
      * is a > b ?
      */
     public static <T> boolean more(T a, T b, Comparator<T> comparator) {
+        return comparator.compare(a, b) > 0;
+    }
+
+    /**
+     * is a > b ?
+     */
+    public static  boolean more(int a, int b, IntComparator comparator) {
+        return comparator.compare(a, b) > 0;
+    }
+
+    /**
+     * is a > b ?
+     */
+    public static  boolean more(long a, long b, LongComparator comparator) {
         return comparator.compare(a, b) > 0;
     }
 
@@ -170,40 +202,6 @@ public class SortUtils {
         return pair(lt - 1, gt + 1);
     }
 
-    public static <T extends Comparable<T>> IntPair partition3mirror(T[] a, int lo, int hi) {
-        int m = getMedianIndex(a, lo, hi);
-        exch(a, m, lo);
-
-        // Bentley-McIlroy 3-way partitioning
-        int i = lo, j = hi + 1;
-        int p = lo, q = hi + 1;
-        T v = a[lo];
-        while (true) {
-            while (less(a[++i], v))
-                if (i == hi) break;
-            while (less(v, a[--j]))
-                if (j == lo) break;
-
-            // pointers cross
-            if (i == j && eq(a[i], v))
-                exch(a, ++p, i);
-            if (i >= j) break;
-
-            exch(a, i, j);
-            if (eq(a[i], v)) exch(a, ++p, i);
-            if (eq(a[j], v)) exch(a, --q, j);
-        }
-
-
-        i = j + 1;
-        for (int k = lo; k <= p; k++)
-            exch(a, k, j--);
-        for (int k = hi; k >= q; k--)
-            exch(a, k, i++);
-
-        return new IntPair(j, i);
-    }
-
     private static <T extends Comparable<T>> int getMedianIndex(T[] a, int lo, int hi) {
         int m;
         int n = hi - lo + 1;
@@ -243,22 +241,24 @@ public class SortUtils {
     public static void main(String[] args) {
 //        Integer[] a1 = {1, 2, 4, 6, 1, 2, 3, 5, 7, 8, 9};
 //        Integer[] a1 = {1, 2, 4, 6, 1, 2, 3, 5};
-//        Integer[] a2 = {1, 2, 3, 5, 7, 8, 9};
-//        merge2(a1, 0, 3, a1.length - 1);
-//        System.out.println(Arrays.toString(a1));
-//        int n = 1000000;
-        int trails = 100_000;
-//        int trails = 100;
-        for (int n = 2; n < 1_0_000_000; n *= 2) {
-            int lo = 0;
-            int mid = lo + n / 2;
-            int hi = n - 1;
-
-//            System.out.printf("%6d: merge->%s\tmerge2->%s%n",
-//                    n,
-//                    timeRandomInput(a -> merge(a, new Double[a.length], lo, mid, hi), n, trails),
-//                    timeRandomInput(a -> merge(a, lo, mid, hi), n, trails));
-        }
+        int[] a2 = {1, 2, 3, 5, 7, 8, 9};
+        System.out.println(binarySearch(a2, 6));
+        System.out.println(Arrays.binarySearch(a2, 6));
+////        merge2(a1, 0, 3, a1.length - 1);
+////        System.out.println(Arrays.toString(a1));
+////        int n = 1000000;
+//        int trails = 100_000;
+////        int trails = 100;
+//        for (int n = 2; n < 1_0_000_000; n *= 2) {
+//            int lo = 0;
+//            int mid = lo + n / 2;
+//            int hi = n - 1;
+//
+////            System.out.printf("%6d: merge->%s\tmerge2->%s%n",
+////                    n,
+////                    timeRandomInput(a -> merge(a, new Double[a.length], lo, mid, hi), n, trails),
+////                    timeRandomInput(a -> merge(a, lo, mid, hi), n, trails));
+//        }
     }
 
     public static void swim(int[] heap, int index) {
